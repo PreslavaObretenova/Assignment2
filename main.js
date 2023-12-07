@@ -3,6 +3,7 @@ import './style.css';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import GUI from 'lil-gui';
+import { generateUUID } from 'three/src/math/MathUtils';
 
 //CONSTANT & VARIABLES
 let width = window.innerWidth;
@@ -23,9 +24,10 @@ var directionalLight;
 //Create an empty array for storing all the geometrie
 var nodes = [];
 var edges = [];
-var angleMultiplier = 60;
-var level = 10;
- 
+var angleMultiplier = 90;
+var level = 5;
+
+
 
 function main(){
   //GUI
@@ -37,7 +39,7 @@ function main(){
   camera.position.set(10, 10, 10)
 
   //LIGHTINGS
-  ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+  ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
   scene.add(ambientLight);
 
   directionalLight = new THREE.DirectionalLight( 0xffffff, 1);
@@ -51,6 +53,7 @@ function main(){
   //Testing the Node Class
  
   var location = new THREE.Vector3(0,0,0);
+  var testNode = new TreeNode(location, 3, 0, null);
   generateTree(location, level, 0, null);
 
 
@@ -75,6 +78,7 @@ function main(){
 //HELPER FUNCTIONS
 //-----------------------------------------------------------------------------------
 
+   
 //RECURSIVE TREE GENERATION
 function generateTree(position, level, parentAngle, parent){
   var node = new TreeNode(position, level, parentAngle, parent);
@@ -109,6 +113,7 @@ function getRndInteger(min, max){
   return Math.floor(Math.random() * (max-min+1)) + min;
 }
 
+
 //ANIMATE AND RENDER
 function animate() {
 	requestAnimationFrame( animate );
@@ -129,13 +134,13 @@ class TreeNode{
     this.children = [];
 
     //Calculate the angle based on the parent's angle
-    this.angle = this.parentAngle + getRndInteger(0-angleMultiplier/2, angleMultiplier/2) * (Math.PI/180);
+    this.angle = this.parentAngle + getRndInteger(9-angleMultiplier/2, angleMultiplier/2) * (Math.PI/180);
 
-    this.length = this.level === 0 ? 2:Math.random() * 2 + 1;
+    this.length = this.level === 1 ? 2:Math.random() * 2 + 1;
 
     //Create the shape for the node
-    var nodeGeometry = new THREE.SphereGeometry(0.1, 10, 10);
-    var material = new THREE.MeshBasicMaterial({color:0x00ff00});
+    var nodeGeometry = new THREE.SphereGeometry(0.12, 1, 1);
+    var material = new THREE.MeshBasicMaterial({color:0xffffff});
     this.nodeMesh = new THREE.Mesh(nodeGeometry, material);
     this.nodeMesh.position.copy(this.position);
 
@@ -151,7 +156,7 @@ class TreeNode{
   }
 
   createChildren(){
-    for(var i=0; i<2; i++){
+    for(var i=0; i<4; i++){
       var childPosition = new THREE.Vector3().copy(this.position);
 
       let axisZ = new THREE.Vector3(0,0,1);
@@ -169,8 +174,11 @@ class TreeNode{
       this.children.push(child);
       
     }
+    
   }
 }
+
+
 
 class Edge{
   constructor(start, end){
@@ -183,7 +191,7 @@ class Edge{
 
     var edgeGeometry = new THREE.BufferGeometry().setFromPoints(points);
 
-    var material = new THREE.MeshBasicMaterial({color:0x00ff00});
+    var material = new THREE.MeshBasicMaterial({color:0xA52A2A});
 
     this.mesh = new THREE.Line(edgeGeometry, material);
   }
